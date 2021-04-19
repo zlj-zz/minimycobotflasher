@@ -220,6 +220,17 @@ def main():
     stdargs = args.parse_args()
     if stdargs.baudrate:
         commands[baud] = stdargs.baudrate
+    else:
+        print("====================================================================")
+        print("0: basic")
+        print("1: atom")
+        board = input("Please choice board(default: 0):")
+        try:
+            board = int(board)
+        except Exception:
+            board = 0
+        if board == 1:
+            commands[baud] = "1500000"
 
     port_str = get_port()
     commands[port] = port_str
