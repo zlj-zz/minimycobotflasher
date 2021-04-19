@@ -1,4 +1,7 @@
 
+.vscode/
+.vim/
+
 __pycache__
 firmwares/
 build/
