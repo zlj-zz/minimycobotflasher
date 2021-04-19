@@ -1,5 +1,6 @@
 PY ?= $(shell (python3 -c 'import sys; sys.exit(sys.version < "3.5")' && \
 	      which python3) )
+TARGET = "~/.local/"
 
 ifeq ($(PY),)
   $(error No suitable python found(>=3.6).)
@@ -12,17 +13,18 @@ lint:
 
 build:
 	$(PY) -m pip install pyinstaller
-	$(PY) -m PyInstaller ./main.spec
+	$(PY) -m pip install -r ./requeirment.txt
+	$(PY) -m PyInstaller --clean ./main.spec
 
 install: build
 	@echo "installing ..."
-	@sudo cp -r dist/main /opt/minimycobotflasher
-	@sudo ln -fs /opt/minimycobotflasher/main /usr/local/bin/minimycobotflasher
+	@sudo mv dist/main ~/.local/minimycobotflasher
+	@sudo ln -fs ~/.local/minimycobotflasher/main /usr/local/bin/minimycobotflasher
 	@source ~/.zshrc
 
 uninstall:
 	@echo "uninstall ..."
-	@sudo rm -r /opt/minimycobotflasher
+	@sudo rm -r ~/.local/minimycobotflasher
 	@sudo rm /usr/local/bin/minimycobotflasher
 
 clean:
@@ -31,10 +33,14 @@ clean:
 
 del: clean
 	@echo $(PY)
-	@if [ -d ./dist ]; then rm -r ./dist/; fi
-	@if [ -d ./build ]; then rm -r ./build; fi
+	@if [ -d ./dist ]; then sudo rm -r ./dist/; fi
+	@if [ -d ./build ]; then sudo rm -r ./build; fi
+
+pack:
+	@sudo mv ./dist/main ./dist/minimycobotflasher
+	@sudo gzip -r --best ./dist/minimycobotflasher
 
 todo:
 	@grep --color -Ion '\(TODO\|XXX\).*' -r fungit
 
-.PHONY: lint clean del build install todo
+.PHONY: lint clean del build install uninstall todo

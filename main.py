@@ -4,6 +4,7 @@ import serial.tools.list_ports
 import requests
 import re
 import os
+import signal
 
 import esptool
 
@@ -72,7 +73,11 @@ def get_port():
 # remote option functions
 # ====================================================================
 def get_menu():
-    resp = requests.get(remote_url)
+    try:
+        resp = requests.get(remote_url)
+    except Exception:
+        print("Please check your network!!!")
+        raise SystemExit(0)
     content = resp.content.decode()
     items = item_re.findall(content, re.S)
     return items
@@ -90,6 +95,10 @@ def ensure_path(path):
         os.makedirs(path, exist_ok=True)
 
 
+def wether_exist(paths):
+    return os.path.exists(paths[0])
+
+
 def download_firmware(name, version):
     url = remote_url + f"{name}/{version}/"
     resp = requests.get(url)
@@ -100,14 +109,21 @@ def download_firmware(name, version):
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0",
         "Accept-Encoding": "identity",
     }
-    print(firmwares)
+    # print(firmwares)
 
     download_path = "/".join([TARGET_DIR, name, version])
     ensure_path(download_path)
-    print(f"Download path: {download_path}")
 
     download_urls = [url + firmware for firmware in firmwares]
     pathes = [download_path + "/" + firmware for firmware in firmwares]
+    has_downloaded = wether_exist(pathes)
+    if has_downloaded:
+        re_download = input("Do you want to download it again?[Y/n] (default: no):")
+        if re_download in ["n", "no", "N", "NO", ""]:
+            print("Flash from localtion.")
+            return pathes
+
+    print(f"Download path: {download_path}")
     for name, download_url, path in zip(firmwares, download_urls, pathes):
         resp_stream = requests.get(download_url, headers=headers, stream=True)
         total_size = int(resp_stream.headers["content-length"])
@@ -178,7 +194,11 @@ def local_option():
     global commands
 
     print("====================================================================")
-    local_items = get_local_items()
+    try:
+        local_items = get_local_items()
+    except FileNotFoundError:
+        print("No local firmware, try to download remotely!!!")
+        raise SystemExit(0)
     # check if has local firmware.
     if not local_items:
         print("No local firmware, try to download remotely!!!")
@@ -213,8 +233,16 @@ def local_option():
     commands[file_two] = dir_path + firewares[1]
 
 
+def exit_(*args):
+    raise SystemExit(0)
+
+
 # main
 def main():
+    try:
+        signal.signal(signal.SIGINT, exit_)
+    except Exception:
+        pass
     args = argparse.ArgumentParser()
     args.add_argument("-b", "--baudrate", help="Port baudrate.")
     stdargs = args.parse_args()
