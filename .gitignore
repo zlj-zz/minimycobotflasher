@@ -7,3 +7,5 @@ firmwares/
 build/
 dist/
 Pipfile.lock
+
+.DS_Store

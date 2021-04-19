@@ -16,7 +16,7 @@ build:
 
 install: build
 	@echo "installing ..."
-	@sudo mv dist/main /opt/minimycobotflasher
+	@sudo cp -r dist/main /opt/minimycobotflasher
 	@sudo ln -fs /opt/minimycobotflasher/main /usr/local/bin/minimycobotflasher
 	@source ~/.zshrc
 
