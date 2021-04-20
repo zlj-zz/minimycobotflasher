@@ -277,7 +277,12 @@ def main():
     elif c == 1:
         remote_option()
 
-    esptool.main(commands)
+    try:
+        esptool.main(commands)
+    except OSError:
+        print("Please do not disconnect from the device.")
+    except esptool.FatalError as e:
+        print(e)
 
 
 if __name__ == "__main__":

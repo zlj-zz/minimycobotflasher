@@ -9,3 +9,4 @@ dist/
 Pipfile.lock
 
 .DS_Store
+minimycobotflasher.tar.gz
