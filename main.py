@@ -52,17 +52,19 @@ item_re = re.compile(r"alt=\"\[DIR\]\"><\/td><td><a href=\"(.*?)\/\">")
 def get_port():
     print("====================================================================")
     plist = list(serial.tools.list_ports.comports())
+    max_ = len(plist)
     idx = 1
     for port in plist:
         print("{} : {}".format(idx, port))
         idx += 1
 
-    _in = input("\nPlease input 1 - {} to choice:".format(idx - 1))
+    _in = input("\nPlease input 1 - {} to choice(default {}):".format(idx - 1, max_))
     try:
         _in = int(_in)
+        _in = max_ if _in > max_ else _in
     except Exception:
-        print(f"Error: input invalid of {_in}")
-        raise SystemExit(0)
+        _in = max_
+    print('choice: {}'.format(_in))
 
     port = str(plist[(_in) - 1]).split(" - ")[0].strip()
     print(port)
@@ -72,7 +74,7 @@ def get_port():
 # ====================================================================
 # remote option functions
 # ====================================================================
-def get_menu():
+def get_remote_firmwares():
     try:
         resp = requests.get(remote_url)
     except Exception:
@@ -150,7 +152,7 @@ def remote_option():
     global commands
 
     print("====================================================================")
-    remote_items = get_menu()
+    remote_items = get_remote_firmwares()
     for idx, item_name in enumerate(remote_items):
         print(f"{idx}: {item_name}")
     item_idx = input("Please choice one firmware, input id(default: 0):")

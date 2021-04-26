@@ -15,6 +15,7 @@ build:
 	$(PY) -m pip install pyinstaller
 	$(PY) -m pip install -r ./requeirment.txt
 	$(PY) -m PyInstaller --clean ./main.spec
+	@sudo chmod -R 766 dist/main/data
 
 install: build
 	@echo "installing ..."
@@ -38,9 +39,12 @@ del: clean
 
 pack:
 	@sudo mv ./dist/main ./dist/minimycobotflasher
-	@sudo gzip -r --best ./dist/minimycobotflasher
+	@sudo tar -zcvf ./minimycobotflasher.tar.gz ./dist/minimycobotflasher
 
 todo:
-	@grep --color -Ion '\(TODO\|XXX\).*' -r fungit
+	@grep --color -Ion '\(TODO\|XXX\).*' -r .
+
+aa:
+	@sudo source ~/.zshrc
 
 .PHONY: lint clean del build install uninstall todo
