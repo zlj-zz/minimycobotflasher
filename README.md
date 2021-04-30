@@ -14,3 +14,13 @@ cd minimycobotflasher
 sudo make install
 minimycobotflasher
 ```
+
+### Run with source code.
+
+Clone the repository.
+
+```
+git clone https://github.com/zlj-zz/minimycobotflasher.git <your path>
+cd <your path>/minimycobotflasher
+python3 main.py
+```
