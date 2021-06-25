@@ -11,3 +11,5 @@ Pipfile.lock
 .DS_Store
 minimycobotflasher.tar.gz
 minimycobotflasher-drawin-arm64.tar.gz
+
+/venv/
