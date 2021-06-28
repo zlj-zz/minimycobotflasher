@@ -1,9 +1,13 @@
+VENV ?= $(shell echo ${VIRTUAL_ENV})
 PY ?= $(shell (python3 -c 'import sys; sys.exit(sys.version < "3.5")' && \
 	      which python3) )
-TARGET = "~/.local/"
+TARGET = "~/.local/opt/"
 
+ifeq ($(VENV),)
+$(error You should only use this within a virtual environment. See README)
+endif
 ifeq ($(PY),)
-  $(error No suitable python found(>=3.6).)
+$(error No suitable python found(>=3.6).)
 endif
 
 lint:
@@ -13,20 +17,20 @@ lint:
 
 build:
 	$(PY) -m pip install pyinstaller
-	$(PY) -m pip install -r ./requeirment.txt
+	$(PY) -m pip install -r ./requirements.txt
 	$(PY) -m PyInstaller --clean ./main.spec
-	@sudo chmod -R 766 dist/main/data
+	@chmod -R 766 dist/main/data
 
 install: build
 	@echo "installing ..."
-	@sudo mv dist/main ~/.local/minimycobotflasher
-	@sudo ln -fs ~/.local/minimycobotflasher/main /usr/local/bin/minimycobotflasher
-	@source ~/.zshrc
+	@mv dist/main ~/.local/opt/minimycobotflasher
+	@mkdir ~/.local/bin
+	@ln -fs ~/.local/opt/minimycobotflasher/main ~/.local/bin/minimycobotflasher
 
 uninstall:
 	@echo "uninstall ..."
-	@sudo rm -r ~/.local/minimycobotflasher
-	@sudo rm /usr/local/bin/minimycobotflasher
+	@rm -r ~/.local/opt/minimycobotflasher
+	@rm ~./local/bin/minimycobotflasher
 
 clean:
 	find . -type f -name *.pyc -delete
@@ -34,17 +38,14 @@ clean:
 
 del: clean
 	@echo $(PY)
-	@if [ -d ./dist ]; then sudo rm -r ./dist/; fi
-	@if [ -d ./build ]; then sudo rm -r ./build; fi
+	@rm -rf ./dist/
+	@rm -rf ./build
 
 pack:
-	@sudo mv ./dist/main ./dist/minimycobotflasher
-	@sudo tar -zcvf ./minimycobotflasher.tar.gz ./dist/minimycobotflasher
+	@mv ./dist/main ./dist/minimycobotflasher
+	@tar -zcvf ./minimycobotflasher.tar.gz ./dist/minimycobotflasher
 
 todo:
 	@grep --color -Ion '\(TODO\|XXX\).*' -r .
-
-aa:
-	@sudo source ~/.zshrc
 
 .PHONY: lint clean del build install uninstall todo

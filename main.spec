@@ -1,8 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
-
+# For use with PyInstaller.
 
 block_cipher = None
-
 
 a = Analysis(['main.py'],
              pathex=['/Users/zacharyzhang/Desktop/MyProject/minimycobotflasher'],

@@ -1,3 +1,4 @@
+# For use with PyInstaller.
 [[source]]
 name = "pypi"
 url = "https://pypi.org/simple"
