@@ -281,8 +281,14 @@ def main():
 
     try:
         esptool.main(commands)
-    except OSError:
-        print("Please do not disconnect from the device.")
+    except OSError as e:
+        print(f"Error encountered! {e}")
+        print()
+        if "Permission denied" in str(e):
+            print("Please ensure you part of the `dialout` group. See README "
+                  "for more details")
+        else:
+            print("Please do not disconnect from the device.")
     except esptool.FatalError as e:
         print(e)
 
